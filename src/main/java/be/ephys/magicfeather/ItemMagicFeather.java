@@ -1,10 +1,12 @@
 package be.ephys.magicfeather;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.WeakHashMap;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,6 +19,7 @@ import net.minecraft.tileentity.TileEntityBeacon;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -211,4 +214,25 @@ public class ItemMagicFeather extends Item {
             return beaconInRangeCache;
         }
     }
+
+    // TODO: Enable effect only when in beacon range
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean hasEffect(ItemStack stack) {
+        return true;
+    }
+
+    public static class ColorHandler implements IItemColor {
+
+        @Override
+        public int colorMultiplier(ItemStack stack, int tintIndex) {
+            if (!ModItems.magicFeather.hasEffect(stack)) {
+                return 0xffffff;
+            }
+
+            long tick = FMLCommonHandler.instance().getMinecraftServerInstance().getTickCounter();
+            return Color.HSBtoRGB((tick * 5) % 360 / 360F, 0.4f, 1f);
+        }
+    }
+
 }
